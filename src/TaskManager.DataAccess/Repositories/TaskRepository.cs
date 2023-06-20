@@ -27,16 +27,15 @@ namespace TaskManager.DataAccess.Repositories
             var queryable = _container.GetItemLinqQueryable<DbTask>()
 
                 //IsDeleted
-                .Where(task => !queryParameters.IsDeleted.HasValue ||
-                               task.IsDeleted == queryParameters.IsDeleted)
+                .Where(task => !task.IsDeleted)
                 
                 //IsDone
                 .Where(task => !queryParameters.IsDone.HasValue ||
                                task.IsDone == queryParameters.IsDone)
                 
                 //DueData
-                .Where(task => !queryParameters.DueDate.HasValue ||
-                               task.DueDate == queryParameters.DueDate)
+                .Where(task => !queryParameters.DueDateTime.HasValue ||
+                               task.DueDateTime == queryParameters.DueDateTime)
 
                 .Skip(queryParameters.Offset)
                 .Take(queryParameters.Limit);
@@ -63,7 +62,7 @@ namespace TaskManager.DataAccess.Repositories
             CancellationToken cancellationToken)
         {
             task.Id = Guid.NewGuid();
-            task.CreatedDate = DateTime.UtcNow;
+            task.CreatedDateTime = DateTime.UtcNow;
 
             await _container.CreateItemAsync(
                 task,
@@ -90,7 +89,7 @@ namespace TaskManager.DataAccess.Repositories
                 stringId,
                 new PartitionKey(stringId),
                 cancellationToken: cancellationToken)).Resource;
-            targetStory.DeletedDate = DateTime.UtcNow;
+            targetStory.DeletedDateTime = DateTime.UtcNow;
             
             await _container.ReplaceItemAsync(
                 targetStory, 

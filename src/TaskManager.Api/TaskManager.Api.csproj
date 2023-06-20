@@ -18,4 +18,12 @@
     <ItemGroup>
         <Protobuf Include="Protos\query.proto" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Commands\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\TaskManager.Services\TaskManager.Services.csproj" />
+    </ItemGroup>
 </Project>

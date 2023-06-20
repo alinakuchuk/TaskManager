@@ -8,13 +8,15 @@ message ManagedTask {
     string description = 3;
     string createdDateTime = 4;
     string dueDateTime = 5;
-    bool isCompleted = 6;
+    bool isDone = 6;
 }
 
 // Tasks list
 message TasksRequest {
   int32 limit = 1;
   int32 offset = 2;
+  string dueDateTime = 3;
+  bool isDone = 4;
 }
 
 message TasksResponse {

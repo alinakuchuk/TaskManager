@@ -12,12 +12,10 @@ namespace TaskManager.Services.Models
 
         public bool IsDone { get; set; }
         
-        public bool IsDeleted { get; set; }
+        public DateTime DueDateTime { get; set; }
         
-        public DateTime DueDate { get; set; }
+        public DateTime CreatedDateTime { get; set; }
         
-        public DateTime CreatedDate { get; set; }
-        
-        public DateTime DeletedDate { get; set; }
+        public DateTime DeletedDateTime { get; set; }
     }
 }

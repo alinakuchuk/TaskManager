@@ -12,6 +12,8 @@ namespace TaskManager.Services.Interfaces
             DtoGetTasksQueryParameters queryParameters,
             CancellationToken cancellationToken);
 
-        Task<DtoTask> GetTaskByIdAsync(Guid id, CancellationToken cancellationToken); 
+        Task<DtoTask> GetTaskByIdAsync(
+            Guid id, 
+            CancellationToken cancellationToken); 
     }
 }
