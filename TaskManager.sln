@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{61FB8615-BD5B-4329-B675-5F0D47470C37}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{FB5868FB-4FDA-46EA-BACE-5C9926AF2DDA}"
+	ProjectSection(SolutionItems) = preProject
+		docker\Dockerfile = docker\Dockerfile
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskManager.Api", "src\TaskManager.Api\TaskManager.Api.csproj", "{1066155B-7A4F-4082-9895-820B9A3970A1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{9285EBDC-13EA-41DE-B849-B5FBB10C7E87}"
+	ProjectSection(SolutionItems) = preProject
+		scripts\build.ps1 = scripts\build.ps1
+		scripts\docker.build.ps1 = scripts\docker.build.ps1
+		make.ps1 = make.ps1
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskManager.DataAccess", "src\TaskManager.DataAccess\TaskManager.DataAccess.csproj", "{6077159A-2EBF-4AA9-A91B-2093687C5EE0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1066155B-7A4F-4082-9895-820B9A3970A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1066155B-7A4F-4082-9895-820B9A3970A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1066155B-7A4F-4082-9895-820B9A3970A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1066155B-7A4F-4082-9895-820B9A3970A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6077159A-2EBF-4AA9-A91B-2093687C5EE0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6077159A-2EBF-4AA9-A91B-2093687C5EE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6077159A-2EBF-4AA9-A91B-2093687C5EE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6077159A-2EBF-4AA9-A91B-2093687C5EE0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1066155B-7A4F-4082-9895-820B9A3970A1} = {61FB8615-BD5B-4329-B675-5F0D47470C37}
+		{6077159A-2EBF-4AA9-A91B-2093687C5EE0} = {61FB8615-BD5B-4329-B675-5F0D47470C37}
+	EndGlobalSection
+EndGlobal
