@@ -30,7 +30,7 @@ namespace TaskManager.Api
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapGrpcReflectionService();
-                endpoints.MapGrpcService<ManagedTaskService>();
+                endpoints.MapGrpcService<QueryManagedTaskService>();
 
                 endpoints.MapGet("/",
                     async context =>

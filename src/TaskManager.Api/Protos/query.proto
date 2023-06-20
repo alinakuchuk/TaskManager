@@ -1,4 +1,5 @@
 syntax = "proto3";
+import "google/protobuf/wrappers.proto";
 
 option csharp_namespace = "TaskManager.Api.Query";
 
@@ -12,29 +13,29 @@ message ManagedTask {
 }
 
 // Tasks list
-message TasksRequest {
+message GetTasksRequest {
   int32 limit = 1;
   int32 offset = 2;
-  string dueDateTime = 3;
-  bool isDone = 4;
+  google.protobuf.StringValue dueDateTime = 3;
+  google.protobuf.BoolValue isDone = 4;
 }
 
-message TasksResponse {
+message GetTasksResponse {
   repeated ManagedTask tasks = 1;
 }
 
 // Task by id
-message TaskRequest {
+message GetTaskRequest {
   string id = 1;
 }
 
-message TaskResponse {
+message GetTaskResponse {
   ManagedTask task = 1;
 }
 
 // Service definition
 service QueryTaskService {
-  rpc QueryTasks(TasksRequest) returns (TasksResponse) {}
+  rpc QueryTasks(GetTasksRequest) returns (GetTasksResponse) {}
 
-  rpc QueryById(TaskRequest) returns (TaskResponse) {}
+  rpc QueryById(GetTaskRequest) returns (GetTaskResponse) {}
 }

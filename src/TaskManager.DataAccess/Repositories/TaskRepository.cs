@@ -25,18 +25,14 @@ namespace TaskManager.DataAccess.Repositories
             CancellationToken cancellationToken)
         {
             var queryable = _container.GetItemLinqQueryable<DbTask>()
-
                 //IsDeleted
                 .Where(task => !task.IsDeleted)
-                
                 //IsDone
                 .Where(task => !queryParameters.IsDone.HasValue ||
                                task.IsDone == queryParameters.IsDone)
-                
                 //DueData
                 .Where(task => !queryParameters.DueDateTime.HasValue ||
                                task.DueDateTime == queryParameters.DueDateTime)
-
                 .Skip(queryParameters.Offset)
                 .Take(queryParameters.Limit);
 

@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+option csharp_namespace = "TaskManager.Api.Command";
+
+message ManagedTask {
+    string name = 1;
+    string description = 2;
+    string dueDateTime = 3;
+    bool isDone = 4;
+}
+
+//Create task
+message CreateTaskRequest {
+    ManagedTask task = 1;
+}
+
+message CreateTaskResponse {
+}
+
+// Service definition
+service CommandTaskService {
+  rpc CreateTask(CreateTaskRequest) returns (CreateTaskResponse) {}
+}
