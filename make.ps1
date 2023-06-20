@@ -1,3 +1,5 @@
+# Just an aggregator
+
 $ErrorActionPreference = 'Stop'
 
 pwsh ./scripts/build.ps1
