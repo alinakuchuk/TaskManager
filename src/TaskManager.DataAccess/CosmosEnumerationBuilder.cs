@@ -7,7 +7,7 @@ using TaskManager.DataAccess.Interfaces;
 
 namespace TaskManager.DataAccess
 {
-    public class CosmosEnumerationBuilder : IEnumerationBuilder
+    public sealed class CosmosEnumerationBuilder : IEnumerationBuilder
     {
         public async Task<IEnumerable<TEntity>> EnumerateAsync<TEntity>(
             IQueryable<TEntity> query,
