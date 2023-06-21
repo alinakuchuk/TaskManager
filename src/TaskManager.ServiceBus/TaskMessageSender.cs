@@ -1,5 +1,8 @@
+using System;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
+using Microsoft.Extensions.Logging;
+using Polly;
 using Polly.Retry;
 using TaskManager.Messaging;
 
@@ -9,16 +12,25 @@ namespace TaskManager.ServiceBus
     {
         private readonly ServiceBusSender _serviceBusSender;
         private readonly AsyncRetryPolicy _retryPolicy;
+        private readonly ILogger<TaskMessageSender<TMessage>> _logger;
         private readonly IMessageSerialization<TMessage> _messageSerialization;
 
         public TaskMessageSender(
             ServiceBusSender serviceBusSender,
-            AsyncRetryPolicy retryPolicy,
+            ILogger<TaskMessageSender<TMessage>> logger,
             IMessageSerialization<TMessage> messageSerialization)
         {
             _serviceBusSender = serviceBusSender;
-            _retryPolicy = retryPolicy;
+            _logger = logger;
             _messageSerialization = messageSerialization;
+            _retryPolicy = Policy
+                .Handle<ServiceBusException>()
+                .Or<TimeoutException>()
+                .WaitAndRetryAsync(
+                    retryCount: 3,
+                    sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
+                    onRetry: (exception, retryAttempt) 
+                        => _logger.LogWarning($"Retrying due to exception: {exception.Message}. Retry attempt {retryAttempt}."));;
         }
         
         public async Task SendMessageAsync(TMessage message)
