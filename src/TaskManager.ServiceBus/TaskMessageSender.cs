@@ -1,33 +1,31 @@
-﻿using System.Text;
 using System.Threading.Tasks;
 using Azure.Messaging.ServiceBus;
-using Newtonsoft.Json;
 using Polly.Retry;
 using TaskManager.Messaging;
-using TaskManager.Messaging.Messages;
 
-namespace TaskManager.ServiceBus.Services
+namespace TaskManager.ServiceBus
 {
-    public sealed class CreateTaskServiceBusMessageService : IMessagingService<CreateTaskMessage>
+    public sealed class TaskMessageSender<TMessage> : IMessageSender<TMessage>
     {
         private readonly ServiceBusSender _serviceBusSender;
         private readonly AsyncRetryPolicy _retryPolicy;
-        
-        public CreateTaskServiceBusMessageService(
+        private readonly IMessageSerialization<TMessage> _messageSerialization;
+
+        public TaskMessageSender(
             ServiceBusSender serviceBusSender,
-            AsyncRetryPolicy retryPolicy)
+            AsyncRetryPolicy retryPolicy,
+            IMessageSerialization<TMessage> messageSerialization)
         {
             _serviceBusSender = serviceBusSender;
             _retryPolicy = retryPolicy;
+            _messageSerialization = messageSerialization;
         }
         
-        public async Task SendMessageAsync(CreateTaskMessage message)
+        public async Task SendMessageAsync(TMessage message)
         {
             await _retryPolicy.ExecuteAsync(async () =>
             {
-                var serviceBusMessage = new ServiceBusMessage(
-                    Encoding.UTF8.GetBytes(
-                        JsonConvert.SerializeObject(message)));
+                var serviceBusMessage = new ServiceBusMessage(_messageSerialization.Serialize(message));
                 await _serviceBusSender.SendMessageAsync(serviceBusMessage);
             });
         }

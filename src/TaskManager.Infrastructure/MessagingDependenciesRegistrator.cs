@@ -8,7 +8,7 @@ using Polly.Retry;
 using TaskManager.Infrastructure.Models;
 using TaskManager.Messaging;
 using TaskManager.Messaging.Messages;
-using TaskManager.ServiceBus.Services;
+using TaskManager.ServiceBus;
 
 namespace TaskManager.Infrastructure
 {
@@ -16,14 +16,6 @@ namespace TaskManager.Infrastructure
     {
         public static void AddMessagingDependencies(this IServiceCollection services, IConfiguration configuration)
         {
-            services.Configure<ServiceBusSettings>(configuration.GetSection("ServiceBusSettings"));
-            
-            services.AddSingleton<ServiceBusClient>(provider =>
-            {
-                var serviceBusSettings = provider.GetRequiredService<IOptions<ServiceBusSettings>>().Value;
-                return new ServiceBusClient(serviceBusSettings.ConnectionString);
-            });
-            
             //TODO: Alina - Log Retry
             services.AddSingleton<AsyncRetryPolicy>(_ =>
             {
@@ -36,32 +28,47 @@ namespace TaskManager.Infrastructure
                         onRetry: (exception, delay, retryAttempt) => throw new Exception($"Retrying due to exception: {exception.Message}. Retry attempt {retryAttempt}."));
             });
 
-            services.AddScoped<IMessagingService<CreateTaskMessage>>(provider =>
+            services.Configure<ServiceBusSettings>(configuration.GetSection("ServiceBusSettings"));
+            
+            services.AddScoped<IMessageSender<CreateTaskMessage>>(provider =>
             {
-                var serviceBusSettings = provider.GetRequiredService<IOptions<ServiceBusSettings>>().Value;
-                var serviceBusClient = provider.GetRequiredService<ServiceBusClient>();
                 var retryPolicy = provider.GetRequiredService<AsyncRetryPolicy>();
+                var serviceBusSettings = provider.GetRequiredService<IOptions<ServiceBusSettings>>().Value;
+                var serviceBusClient = new ServiceBusClient(serviceBusSettings.ConnectionString);
                 var sender = serviceBusClient.CreateSender(serviceBusSettings.CreateTaskQueueName);
-                return new CreateTaskServiceBusMessageService(sender, retryPolicy);
+                return new TaskMessageSender<CreateTaskMessage>(
+                    sender,
+                    retryPolicy,
+                    new JsonMessageSerialization<CreateTaskMessage>());
             });
             
-            services.AddScoped<IMessagingService<UpdateTaskMessage>>(provider =>
+            services.AddScoped<IMessageSender<UpdateTaskMessage>>(provider =>
             {
-                var serviceBusSettings = provider.GetRequiredService<IOptions<ServiceBusSettings>>().Value;
-                var serviceBusClient = provider.GetRequiredService<ServiceBusClient>();
                 var retryPolicy = provider.GetRequiredService<AsyncRetryPolicy>();
+                var serviceBusSettings = provider.GetRequiredService<IOptions<ServiceBusSettings>>().Value;
+                var serviceBusClient = new ServiceBusClient(serviceBusSettings.ConnectionString);
                 var sender = serviceBusClient.CreateSender(serviceBusSettings.UpdateTaskQueueName);
-                return new UpdateTaskServiceBusMessageService(sender, retryPolicy);
+                return new TaskMessageSender<UpdateTaskMessage>(
+                    sender,
+                    retryPolicy,
+                    new JsonMessageSerialization<UpdateTaskMessage>());
             });
             
-            services.AddScoped<IMessagingService<DeleteTaskMessage>>(provider =>
+            services.AddScoped<IMessageSender<DeleteTaskMessage>>(provider =>
             {
-                var serviceBusSettings = provider.GetRequiredService<IOptions<ServiceBusSettings>>().Value;
-                var serviceBusClient = provider.GetRequiredService<ServiceBusClient>();
                 var retryPolicy = provider.GetRequiredService<AsyncRetryPolicy>();
+                var serviceBusSettings = provider.GetRequiredService<IOptions<ServiceBusSettings>>().Value;
+                var serviceBusClient = new ServiceBusClient(serviceBusSettings.ConnectionString);
                 var sender = serviceBusClient.CreateSender(serviceBusSettings.DeleteTaskQueueName);
-                return new DeleteTaskServiceBusMessageService(sender, retryPolicy);
+                return new TaskMessageSender<DeleteTaskMessage>(
+                    sender,
+                    retryPolicy,
+                    new JsonMessageSerialization<DeleteTaskMessage>());
             });
+
+            services.AddSingleton(
+                typeof(IMessageSerialization<>),
+                typeof(JsonMessageSerialization<>));
         }
     }
 }

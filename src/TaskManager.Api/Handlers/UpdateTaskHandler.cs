@@ -10,16 +10,16 @@ namespace TaskManager.Api.Handlers
 {
     public sealed class UpdateTaskHandler : IRequestHandler<UpdateTaskCommand>
     {
-        private readonly IMessagingService<UpdateTaskMessage> _messagingService;
+        private readonly IMessageSender<UpdateTaskMessage> _messageSender;
 
-        public UpdateTaskHandler(IMessagingService<UpdateTaskMessage> messagingService)
+        public UpdateTaskHandler(IMessageSender<UpdateTaskMessage> messageSender)
         {
-            _messagingService = messagingService;
+            _messageSender = messageSender;
         }
         
         public async Task Handle(UpdateTaskCommand request, CancellationToken cancellationToken)
         {
-            await _messagingService.SendMessageAsync(new UpdateTaskMessage
+            await _messageSender.SendMessageAsync(new UpdateTaskMessage
             {
                 Id = request.Id,
                 Name = request.Task.Name,

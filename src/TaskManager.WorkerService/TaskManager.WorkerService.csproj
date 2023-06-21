@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+        <UserSecretsId>dotnet-TaskManager.WorkerService-9A6560A6-38D2-4327-8B05-2E449A6134DC</UserSecretsId>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="AutoMapper" Version="12.0.1" />
+        <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+        <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.15.0" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="..\..\.dockerignore">
+        <Link>.dockerignore</Link>
+      </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\TaskManager.Contracts\TaskManager.Contracts.csproj" />
+      <ProjectReference Include="..\TaskManager.Messaging\TaskManager.Messaging.csproj" />
+      <ProjectReference Include="..\TaskManager.Services\TaskManager.Services.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="MappingProfiles\" />
+    </ItemGroup>
+</Project>

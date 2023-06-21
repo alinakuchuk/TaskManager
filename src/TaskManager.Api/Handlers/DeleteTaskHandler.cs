@@ -9,16 +9,16 @@ namespace TaskManager.Api.Handlers
 {
     public sealed class DeleteTaskHandler : IRequestHandler<DeleteTaskCommand>
     {
-        private readonly IMessagingService<DeleteTaskMessage> _messagingService;
+        private readonly IMessageSender<DeleteTaskMessage> _messageSender;
 
-        public DeleteTaskHandler(IMessagingService<DeleteTaskMessage> messagingService)
+        public DeleteTaskHandler(IMessageSender<DeleteTaskMessage> messageSender)
         {
-            _messagingService = messagingService;
+            _messageSender = messageSender;
         }
 
         public async Task Handle(DeleteTaskCommand request, CancellationToken cancellationToken)
         {
-            await _messagingService.SendMessageAsync(new DeleteTaskMessage
+            await _messageSender.SendMessageAsync(new DeleteTaskMessage
             {
                 Id = request.Id
             });

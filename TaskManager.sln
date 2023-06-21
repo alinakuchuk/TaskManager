@@ -28,6 +28,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskManager.ServiceBus", "s
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskManager.Infrastructure", "src\TaskManager.Infrastructure\TaskManager.Infrastructure.csproj", "{07FBC5E6-9B89-48CC-B6A4-853C32760295}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskManager.WorkerService", "src\TaskManager.WorkerService\TaskManager.WorkerService.csproj", "{27211663-A4E8-4D4E-BDD9-5F778E162D86}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -62,6 +64,10 @@ Global
 		{07FBC5E6-9B89-48CC-B6A4-853C32760295}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{07FBC5E6-9B89-48CC-B6A4-853C32760295}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{07FBC5E6-9B89-48CC-B6A4-853C32760295}.Release|Any CPU.Build.0 = Release|Any CPU
+		{27211663-A4E8-4D4E-BDD9-5F778E162D86}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27211663-A4E8-4D4E-BDD9-5F778E162D86}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27211663-A4E8-4D4E-BDD9-5F778E162D86}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{27211663-A4E8-4D4E-BDD9-5F778E162D86}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{1066155B-7A4F-4082-9895-820B9A3970A1} = {61FB8615-BD5B-4329-B675-5F0D47470C37}
@@ -71,5 +77,6 @@ Global
 		{609E8F03-0B65-4BAC-85E2-F573B28B0B3B} = {61FB8615-BD5B-4329-B675-5F0D47470C37}
 		{81F3DED7-FB17-406E-8CAE-4FB5F7192F81} = {61FB8615-BD5B-4329-B675-5F0D47470C37}
 		{07FBC5E6-9B89-48CC-B6A4-853C32760295} = {61FB8615-BD5B-4329-B675-5F0D47470C37}
+		{27211663-A4E8-4D4E-BDD9-5F778E162D86} = {61FB8615-BD5B-4329-B675-5F0D47470C37}
 	EndGlobalSection
 EndGlobal

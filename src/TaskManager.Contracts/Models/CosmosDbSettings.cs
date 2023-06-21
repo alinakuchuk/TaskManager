@@ -1,4 +1,4 @@
-namespace TaskManager.Infrastructure.Models
+namespace TaskManager.Contracts.Models
 {
     public sealed class CosmosDbSettings
     {

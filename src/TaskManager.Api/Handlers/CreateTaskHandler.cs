@@ -10,16 +10,16 @@ namespace TaskManager.Api.Handlers
 {
     public sealed class CreateTaskHandler: IRequestHandler<CreateTaskCommand>
     {
-        private readonly IMessagingService<CreateTaskMessage> _messagingService;
+        private readonly IMessageSender<CreateTaskMessage> _messageSender;
 
-        public CreateTaskHandler(IMessagingService<CreateTaskMessage> messagingService)
+        public CreateTaskHandler(IMessageSender<CreateTaskMessage> messageSender)
         {
-            _messagingService = messagingService;
+            _messageSender = messageSender;
         }
 
         public async Task Handle(CreateTaskCommand request, CancellationToken cancellationToken)
         {
-            await _messagingService.SendMessageAsync(new CreateTaskMessage
+            await _messageSender.SendMessageAsync(new CreateTaskMessage
             {
                 Name = request.Task.Name,
                 Description = request.Task.Description,
