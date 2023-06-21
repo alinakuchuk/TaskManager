@@ -1,4 +1,5 @@
 ﻿using Microsoft.Azure.Cosmos;
+using Microsoft.Azure.Cosmos.Fluent;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -15,14 +16,30 @@ namespace TaskManager.Infrastructure
         {
             services.Configure<CosmosDbSettings>(configuration.GetSection("CosmosDbSettings"));
 
-            services.AddSingleton(serviceProvider =>
-            {
-                var cosmosDbSettings = serviceProvider.GetRequiredService<IOptions<CosmosDbSettings>>().Value;
-                var cosmosClient =  new CosmosClient(cosmosDbSettings.EndpointUri, cosmosDbSettings.PrimaryKey);
-                return cosmosClient.GetContainer(cosmosDbSettings.DatabaseName, cosmosDbSettings.ContainerName);
-            });
-  
-            services.AddScoped<ITaskRepository, LocalTaskRepository>();
+            services.AddSingleton(
+                typeof(CosmosClient),
+                provider =>
+                {
+                    var dbOptions = provider.GetRequiredService<IOptions<CosmosDbSettings>>().Value;
+                    return new CosmosClientBuilder(dbOptions.ConnectionString)
+                        .WithSerializerOptions(
+                            new CosmosSerializationOptions
+                            {
+                                PropertyNamingPolicy = CosmosPropertyNamingPolicy.CamelCase
+                            }).Build();
+                });
+
+            services.AddScoped(
+                typeof(Container),
+                provider =>
+                {
+                    var dbOptions = provider.GetRequiredService<IOptions<CosmosDbSettings>>().Value;
+                    var cosmosClient = provider.GetService<CosmosClient>();
+
+                    return cosmosClient.GetContainer(dbOptions.DatabaseName, dbOptions.ContainerName);
+                });
+            
+            services.AddScoped<ITaskRepository, TaskRepository>();
             services.AddSingleton<IEnumerationBuilder, CosmosEnumerationBuilder>();
         }
     }

@@ -7,8 +7,13 @@ namespace TaskManager.Api.Validators
     {
         public GetTasksRequestValidator()
         {
-            RuleFor(request => request.Offset).NotEmpty().WithMessage("Offset is required.");
-            RuleFor(request => request.Limit).NotEmpty().WithMessage("Limit is required.");
+            RuleFor(request => request.Offset)
+                .GreaterThanOrEqualTo(0)
+                .WithMessage("Offset should be greater than or equal to '0'.");
+            RuleFor(request => request.Limit)
+                .GreaterThanOrEqualTo(0)
+                .LessThanOrEqualTo(10)
+                .WithMessage("Limit should be greater than or equal to '0' and less than or equal to '10'.");
         }
     }
 }

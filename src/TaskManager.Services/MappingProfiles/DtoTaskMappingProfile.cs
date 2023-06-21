@@ -10,7 +10,7 @@ namespace TaskManager.Services.MappingProfiles
         {
             CreateMap<DtoGetTasksQueryParameters, DbGetTasksQueryParameters>();
             CreateMap<DtoTask, DbTask>();
-            CreateMap<DbTask, DbTask>();
+            CreateMap<DbTask, DtoTask>();
         }
     }
 }

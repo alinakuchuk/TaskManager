@@ -17,7 +17,7 @@ namespace TaskManager.Api
 
         private static Metadata CreateTrailers(Guid correlationId)
         {
-            return new Metadata { { "CorrelationId", correlationId.ToString() } };;
+            return new Metadata { { "CorrelationId", correlationId.ToString() } };
         }
     }
 }

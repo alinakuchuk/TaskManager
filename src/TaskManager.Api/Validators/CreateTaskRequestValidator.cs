@@ -9,8 +9,6 @@ namespace TaskManager.Api.Validators
         {
             RuleFor(request => request.Task.Name).NotEmpty().WithMessage("Name is required.");
             RuleFor(request => request.Task.DueDateTime).NotEmpty().WithMessage("DueDateTime is required.");
-            RuleFor(request => request.Task.IsDone).NotEmpty().WithMessage("IsDone is required.");
-
         }
     }
 }

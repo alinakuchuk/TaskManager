@@ -7,7 +7,7 @@ namespace TaskManager.Api.Queries
 {
     public sealed class GetTasksQuery : IRequest<IEnumerable<QueryTask>>
     {
-        public DateTime? DueData { get; set; }
+        public DateTime? DueDateTime { get; set; }
         
         public bool? IsDone { get; set; }
         

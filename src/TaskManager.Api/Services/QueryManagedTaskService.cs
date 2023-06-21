@@ -22,7 +22,7 @@ namespace TaskManager.Api.Services
         {
             var query = new GetTasksQuery
             {
-                DueData = DateTime.TryParse(request.DueDateTime, out var value)
+                DueDateTime = DateTime.TryParse(request.DueDateTime, out var value)
                     ? value
                     : null,
                 IsDone = request.IsDone,

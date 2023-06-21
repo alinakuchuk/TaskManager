@@ -65,7 +65,6 @@ namespace TaskManager.Api
             }
 
             app.UseRouting();
-
             
             app.UseEndpoints(endpoints =>
             {

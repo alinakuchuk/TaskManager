@@ -1,10 +1,16 @@
 using AutoMapper;
 using Azure.Messaging.ServiceBus;
+using Microsoft.Azure.Cosmos;
+using Microsoft.Azure.Cosmos.Fluent;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using TaskManager.Contracts.Models;
+using TaskManager.DataAccess;
+using TaskManager.DataAccess.Interfaces;
+using TaskManager.DataAccess.Repositories;
 using TaskManager.Infrastructure.Models;
 using TaskManager.Messaging;
 using TaskManager.Messaging.Messages;
@@ -12,6 +18,7 @@ using TaskManager.Services.Interfaces;
 using TaskManager.Services.MappingProfiles;
 using TaskManager.Services.Services;
 using TaskManager.WorkerService.CommandHandlers;
+using TaskManager.WorkerService.MappingProfiles;
 
 namespace TaskManager.WorkerService
 {
@@ -32,10 +39,37 @@ namespace TaskManager.WorkerService
                         .Build();
                     
                     services.Configure<ServiceBusSettings>(configuration.GetSection("ServiceBusSettings"));
+                    services.Configure<CosmosDbSettings>(configuration.GetSection("CosmosDbSettings"));
                     
+                    services.AddSingleton(
+                        typeof(CosmosClient),
+                        provider =>
+                        {
+                            var dbOptions = provider.GetRequiredService<IOptions<CosmosDbSettings>>().Value;
+                            return new CosmosClientBuilder(dbOptions.ConnectionString)
+                                .WithSerializerOptions(
+                                    new CosmosSerializationOptions
+                                    {
+                                        PropertyNamingPolicy = CosmosPropertyNamingPolicy.CamelCase
+                                    }).Build();
+                        });
+
+                    services.AddSingleton(
+                        typeof(Container),
+                        provider =>
+                        {
+                            var dbOptions = provider.GetRequiredService<IOptions<CosmosDbSettings>>().Value;
+                            var cosmosClient = provider.GetService<CosmosClient>();
+
+                            return cosmosClient.GetContainer(dbOptions.DatabaseName, dbOptions.ContainerName);
+                        });
+                    
+                    services.AddAutoMapper(typeof(TaskMessageMappingProfile));
                     services.AddAutoMapper(typeof(DtoTaskMappingProfile));
                     
-                    services.AddScoped<ICommandTaskService, CommandTaskService>();
+                    services.AddSingleton<IEnumerationBuilder, CosmosEnumerationBuilder>();
+                    services.AddSingleton<ITaskRepository, TaskRepository>();
+                    services.AddSingleton<ICommandTaskService, CommandTaskService>();
                     services.AddSingleton(
                         typeof(IMessageSerialization<>),
                         typeof(JsonMessageSerialization<>));

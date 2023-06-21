@@ -2,7 +2,7 @@ namespace TaskManager.Contracts.Models
 {
     public sealed class CosmosDbSettings
     {
-        public string EndpointUri { get; set; }
+        public string ConnectionString { get; set; }
         
         public string PrimaryKey { get; set; }
         
