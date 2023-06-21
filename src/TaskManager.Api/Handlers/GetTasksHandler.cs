@@ -10,7 +10,7 @@ using TaskManager.Services.Models;
 
 namespace TaskManager.Api.Handlers
 {
-    public sealed class GetTasksHandler : IRequestHandler<GetTasksQuery, IEnumerable<ManagedTask>>
+    public sealed class GetTasksHandler : IRequestHandler<GetTasksQuery, IEnumerable<QueryTask>>
     {
         private readonly IQueryTaskService _queryTaskService;
         private readonly IMapper _mapper;
@@ -23,7 +23,7 @@ namespace TaskManager.Api.Handlers
             _mapper = mapper;
         }
             
-        public async Task<IEnumerable<ManagedTask>> Handle(
+        public async Task<IEnumerable<QueryTask>> Handle(
             GetTasksQuery query,
             CancellationToken cancellationToken)
         {
@@ -32,7 +32,7 @@ namespace TaskManager.Api.Handlers
                 queryParameters,
                 cancellationToken);
 
-            return _mapper.Map<IEnumerable<ManagedTask>>(tasks);
+            return _mapper.Map<IEnumerable<QueryTask>>(tasks);
         }
     }
 }

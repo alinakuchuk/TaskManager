@@ -2,7 +2,7 @@ syntax = "proto3";
 
 option csharp_namespace = "TaskManager.Api.Command";
 
-message ManagedTask {
+message CommandTask {
     string name = 1;
     string description = 2;
     string dueDateTime = 3;
@@ -11,7 +11,7 @@ message ManagedTask {
 
 //Create task
 message CreateTaskRequest {
-    ManagedTask task = 1;
+    CommandTask task = 1;
 }
 
 message CreateTaskResponse {
@@ -20,7 +20,7 @@ message CreateTaskResponse {
 //Update task
 message UpdateTaskRequest {
     string id = 1;
-    ManagedTask task = 2;
+    CommandTask task = 2;
 }
 
 message UpdateTaskResponse {

@@ -4,7 +4,7 @@ using TaskManager.Api.Query;
 
 namespace TaskManager.Api.Queries
 {
-    public sealed class GetTaskByIdQuery : IRequest<ManagedTask>
+    public sealed class GetTaskByIdQuery : IRequest<QueryTask>
     {
         public Guid Id { get; set; }
     }

@@ -8,7 +8,7 @@ using TaskManager.Services.Interfaces;
 
 namespace TaskManager.Api.Handlers
 {
-    public sealed class GetTaskByIdHandler : IRequestHandler<GetTaskByIdQuery, ManagedTask>
+    public sealed class GetTaskByIdHandler : IRequestHandler<GetTaskByIdQuery, QueryTask>
     {
         private readonly IQueryTaskService _queryTaskService;
         private readonly IMapper _mapper;
@@ -21,7 +21,7 @@ namespace TaskManager.Api.Handlers
             _mapper = mapper;
         }
             
-        public async Task<ManagedTask> Handle(
+        public async Task<QueryTask> Handle(
             GetTaskByIdQuery query,
             CancellationToken cancellationToken)
         {
@@ -29,7 +29,7 @@ namespace TaskManager.Api.Handlers
                 query.Id,
                 cancellationToken);
 
-            return _mapper.Map<ManagedTask>(task);
+            return _mapper.Map<QueryTask>(task);
         }
     }
 }

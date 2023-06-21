@@ -21,6 +21,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\TaskManager.Infrastructure\TaskManager.Infrastructure.csproj" />
       <ProjectReference Include="..\TaskManager.Messaging\TaskManager.Messaging.csproj" />
       <ProjectReference Include="..\TaskManager.Services\TaskManager.Services.csproj" />
     </ItemGroup>

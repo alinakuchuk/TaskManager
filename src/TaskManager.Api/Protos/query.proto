@@ -3,7 +3,7 @@ import "google/protobuf/wrappers.proto";
 
 option csharp_namespace = "TaskManager.Api.Query";
 
-message ManagedTask {
+message QueryTask {
     string id = 1;
     string name = 2;
     string description = 3;
@@ -21,7 +21,7 @@ message GetTasksRequest {
 }
 
 message GetTasksResponse {
-  repeated ManagedTask tasks = 1;
+  repeated QueryTask tasks = 1;
 }
 
 // Task by id
@@ -30,7 +30,7 @@ message GetTaskRequest {
 }
 
 message GetTaskResponse {
-  ManagedTask task = 1;
+  QueryTask task = 1;
 }
 
 // Service definition

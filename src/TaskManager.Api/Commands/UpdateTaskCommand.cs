@@ -8,6 +8,6 @@ namespace TaskManager.Api.Commands
     {
         public Guid Id { get; set; }
 
-        public ManagedTask Task { get; set; }
+        public CommandTask Task { get; set; }
     }
 }

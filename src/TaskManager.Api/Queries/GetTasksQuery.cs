@@ -5,7 +5,7 @@ using TaskManager.Api.Query;
 
 namespace TaskManager.Api.Queries
 {
-    public sealed class GetTasksQuery : IRequest<IEnumerable<ManagedTask>>
+    public sealed class GetTasksQuery : IRequest<IEnumerable<QueryTask>>
     {
         public DateTime? DueData { get; set; }
         

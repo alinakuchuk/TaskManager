@@ -5,6 +5,6 @@ namespace TaskManager.Api.Commands
 {
     public sealed class CreateTaskCommand : IRequest
     {
-        public ManagedTask Task { get; set; }
+        public CommandTask Task { get; set; }
     }
 }
