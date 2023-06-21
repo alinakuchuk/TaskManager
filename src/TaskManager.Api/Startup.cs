@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using Calzolari.Grpc.AspNetCore.Validation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -6,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using TaskManager.Api.Services;
+using TaskManager.Api.Validators;
 using TaskManager.Infrastructure;
 
 namespace TaskManager.Api
@@ -23,7 +25,19 @@ namespace TaskManager.Api
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddGrpc();
+            services.AddGrpc(options =>
+            {
+                options.EnableMessageValidation();
+            });
+            
+            services.AddGrpcValidation();
+
+            services.AddValidator<CreateTaskRequestValidator>();
+            services.AddValidator<UpdateTaskRequestValidator>();
+            services.AddValidator<DeleteTaskRequestValidator>();
+            services.AddValidator<GetTaskRequestValidator>();
+            services.AddValidator<GetTasksRequestValidator>();
+
             services.AddGrpcReflection();
             
             services.AddDataAccessDependencies(_configuration);
@@ -38,7 +52,7 @@ namespace TaskManager.Api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
+            if (!env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }

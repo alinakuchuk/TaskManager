@@ -6,6 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Calzolari.Grpc.AspNetCore.Validation" Version="5.1.0" />
         <PackageReference Include="Grpc.AspNetCore" Version="2.34.0" />
         <PackageReference Include="Grpc.AspNetCore.Server.Reflection" Version="2.54.0" />
         <PackageReference Include="Grpc.Tools" Version="2.54.0">
