@@ -17,7 +17,28 @@ message CreateTaskRequest {
 message CreateTaskResponse {
 }
 
+//Update task
+message UpdateTaskRequest {
+    string id = 1;
+    ManagedTask task = 2;
+}
+
+message UpdateTaskResponse {
+}
+
+//Delete task
+message DeleteTaskRequest {
+    string id = 1;
+}
+
+message DeleteTaskResponse {
+}
+
 // Service definition
 service CommandTaskService {
   rpc CreateTask(CreateTaskRequest) returns (CreateTaskResponse) {}
+  
+  rpc UpdateTask(UpdateTaskRequest) returns (UpdateTaskResponse) {}
+  
+  rpc DeleteTask(DeleteTaskRequest) returns (DeleteTaskResponse) {}
 }

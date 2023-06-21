@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Grpc.Core;
 using MediatR;
@@ -27,6 +28,35 @@ namespace TaskManager.Api.Services
             await _sender.Send(command);
             
             return new CreateTaskResponse();
+        }
+        
+        public override async Task<UpdateTaskResponse> UpdateTask(
+            UpdateTaskRequest request,
+            ServerCallContext context)
+        {
+            var command = new UpdateTaskCommand
+            {
+                Id = Guid.Parse(request.Id),
+                Task = request.Task
+            };
+
+            await _sender.Send(command);
+            
+            return new UpdateTaskResponse();
+        }
+
+        public override async Task<DeleteTaskResponse> DeleteTask(
+            DeleteTaskRequest request,
+            ServerCallContext context)
+        {
+            var command = new DeleteTaskCommand
+            {
+                Id = Guid.Parse(request.Id)
+            };
+
+            await _sender.Send(command);
+            
+            return new DeleteTaskResponse();
         }
     }
 }
