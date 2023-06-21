@@ -1,22 +1,15 @@
 using AutoMapper;
 using Azure.Messaging.ServiceBus;
-using Microsoft.Azure.Cosmos;
-using Microsoft.Azure.Cosmos.Fluent;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using TaskManager.Infrastructure;
 using TaskManager.Contracts.Models;
-using TaskManager.DataAccess;
-using TaskManager.DataAccess.Interfaces;
-using TaskManager.DataAccess.Repositories;
-using TaskManager.Infrastructure.Models;
 using TaskManager.Messaging;
 using TaskManager.Messaging.Messages;
-using TaskManager.Services.Interfaces;
-using TaskManager.Services.MappingProfiles;
-using TaskManager.Services.Services;
+using TaskManager.ServiceBus;
 using TaskManager.WorkerService.CommandHandlers;
 using TaskManager.WorkerService.MappingProfiles;
 
@@ -39,40 +32,51 @@ namespace TaskManager.WorkerService
                         .Build();
                     
                     services.Configure<ServiceBusSettings>(configuration.GetSection("ServiceBusSettings"));
-                    services.Configure<CosmosDbSettings>(configuration.GetSection("CosmosDbSettings"));
-                    
-                    services.AddSingleton(
-                        typeof(CosmosClient),
-                        provider =>
-                        {
-                            var dbOptions = provider.GetRequiredService<IOptions<CosmosDbSettings>>().Value;
-                            return new CosmosClientBuilder(dbOptions.ConnectionString)
-                                .WithSerializerOptions(
-                                    new CosmosSerializationOptions
-                                    {
-                                        PropertyNamingPolicy = CosmosPropertyNamingPolicy.CamelCase
-                                    }).Build();
-                        });
 
-                    services.AddSingleton(
-                        typeof(Container),
-                        provider =>
-                        {
-                            var dbOptions = provider.GetRequiredService<IOptions<CosmosDbSettings>>().Value;
-                            var cosmosClient = provider.GetService<CosmosClient>();
-
-                            return cosmosClient.GetContainer(dbOptions.DatabaseName, dbOptions.ContainerName);
-                        });
-                    
                     services.AddAutoMapper(typeof(TaskMessageMappingProfile));
-                    services.AddAutoMapper(typeof(DtoTaskMappingProfile));
                     
-                    services.AddSingleton<IEnumerationBuilder, CosmosEnumerationBuilder>();
-                    services.AddSingleton<ITaskRepository, TaskRepository>();
-                    services.AddSingleton<ICommandTaskService, CommandTaskService>();
+                    services.AddDataAccessDependencies(configuration);
+                    services.AddServicesDependencies();
+                    
                     services.AddSingleton(
                         typeof(IMessageSerialization<>),
                         typeof(JsonMessageSerialization<>));
+                    
+                    services.AddScoped<IMessageSender<CreateTaskMessage>>(provider =>
+                    {
+                        var logger = provider.GetRequiredService<ILogger<TaskMessageSender<CreateTaskMessage>>>();
+                        var serviceBusSettings = provider.GetRequiredService<IOptions<ServiceBusSettings>>().Value;
+                        var serviceBusClient = new ServiceBusClient(serviceBusSettings.ConnectionString);
+                        return new TaskMessageSender<CreateTaskMessage>(
+                            serviceBusClient,
+                            serviceBusSettings.ErrorCreateTaskQueueName,
+                            logger,
+                            new JsonMessageSerialization<CreateTaskMessage>());
+                    });
+                    
+                    services.AddScoped<IMessageSender<UpdateTaskMessage>>(provider =>
+                    {
+                        var logger = provider.GetRequiredService<ILogger<TaskMessageSender<UpdateTaskMessage>>>();
+                        var serviceBusSettings = provider.GetRequiredService<IOptions<ServiceBusSettings>>().Value;
+                        var serviceBusClient = new ServiceBusClient(serviceBusSettings.ConnectionString);
+                        return new TaskMessageSender<UpdateTaskMessage>(
+                            serviceBusClient,
+                            serviceBusSettings.ErrorUpdateTaskQueueName,
+                            logger,
+                            new JsonMessageSerialization<UpdateTaskMessage>());
+                    });
+                    
+                    services.AddScoped<IMessageSender<DeleteTaskMessage>>(provider =>
+                    {
+                        var logger = provider.GetRequiredService<ILogger<TaskMessageSender<DeleteTaskMessage>>>();
+                        var serviceBusSettings = provider.GetRequiredService<IOptions<ServiceBusSettings>>().Value;
+                        var serviceBusClient = new ServiceBusClient(serviceBusSettings.ConnectionString);
+                        return new TaskMessageSender<DeleteTaskMessage>(
+                            serviceBusClient,
+                            serviceBusSettings.ErrorDeleteTaskQueueName,
+                            logger,
+                            new JsonMessageSerialization<DeleteTaskMessage>());
+                    });
 
                     services.AddHostedService<CreateTaskMessageHandler>(provider =>
                     {
@@ -81,14 +85,15 @@ namespace TaskManager.WorkerService
                         var serviceBusClient = new ServiceBusClient(serviceBusSettings.ConnectionString);
                         var receiver = serviceBusClient.CreateReceiver(serviceBusSettings.CreateTaskQueueName);
                         var messageSerialization = provider.GetRequiredService<IMessageSerialization<CreateTaskMessage>>();
-                        var commandTaskService = provider.GetRequiredService<ICommandTaskService>();
                         var mapper = provider.GetRequiredService<IMapper>();
+                        var sender = provider.GetRequiredService<IMessageSender<CreateTaskMessage>>();
                         return new CreateTaskMessageHandler(
                             logger,
                             receiver,
                             messageSerialization,
-                            commandTaskService,
-                            mapper);
+                            mapper,
+                            provider,
+                            sender);
                     });
                     
                     services.AddHostedService<UpdateTaskMessageHandler>(provider =>
@@ -98,14 +103,15 @@ namespace TaskManager.WorkerService
                         var serviceBusClient = new ServiceBusClient(serviceBusSettings.ConnectionString);
                         var receiver = serviceBusClient.CreateReceiver(serviceBusSettings.UpdateTaskQueueName);
                         var messageSerialization = provider.GetRequiredService<IMessageSerialization<UpdateTaskMessage>>();
-                        var commandTaskService = provider.GetRequiredService<ICommandTaskService>();
                         var mapper = provider.GetRequiredService<IMapper>();
+                        var sender = provider.GetRequiredService<IMessageSender<UpdateTaskMessage>>();
                         return new UpdateTaskMessageHandler(
                             logger,
                             receiver,
                             messageSerialization,
-                            commandTaskService,
-                            mapper);
+                            mapper,
+                            provider,
+                            sender);
                     });
                     
                     services.AddHostedService<DeleteTaskMessageHandler>(provider =>
@@ -115,12 +121,13 @@ namespace TaskManager.WorkerService
                         var serviceBusClient = new ServiceBusClient(serviceBusSettings.ConnectionString);
                         var receiver = serviceBusClient.CreateReceiver(serviceBusSettings.DeleteTaskQueueName);
                         var messageSerialization = provider.GetRequiredService<IMessageSerialization<DeleteTaskMessage>>();
-                        var commandTaskService = provider.GetRequiredService<ICommandTaskService>();
+                        var sender = provider.GetRequiredService<IMessageSender<DeleteTaskMessage>>();
                         return new DeleteTaskMessageHandler(
                             logger,
                             receiver,
                             messageSerialization,
-                            commandTaskService);
+                            provider,
+                            sender);
                     });
                 });
     }

@@ -16,11 +16,12 @@ namespace TaskManager.ServiceBus
         private readonly IMessageSerialization<TMessage> _messageSerialization;
 
         public TaskMessageSender(
-            ServiceBusSender serviceBusSender,
+            ServiceBusClient serviceBusClient,
+            string queueName,
             ILogger<TaskMessageSender<TMessage>> logger,
             IMessageSerialization<TMessage> messageSerialization)
         {
-            _serviceBusSender = serviceBusSender;
+            _serviceBusSender = serviceBusClient.CreateSender(queueName);
             _logger = logger;
             _messageSerialization = messageSerialization;
             _retryPolicy = Policy
@@ -39,6 +40,7 @@ namespace TaskManager.ServiceBus
             {
                 var serviceBusMessage = new ServiceBusMessage(_messageSerialization.Serialize(message));
                 await _serviceBusSender.SendMessageAsync(serviceBusMessage);
+                _logger.LogInformation("");
             });
         }
     }

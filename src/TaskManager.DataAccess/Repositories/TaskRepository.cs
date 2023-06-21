@@ -85,7 +85,9 @@ namespace TaskManager.DataAccess.Repositories
                 stringId,
                 new PartitionKey(stringId),
                 cancellationToken: cancellationToken)).Resource;
+            
             targetStory.DeletedDateTime = DateTime.UtcNow;
+            targetStory.IsDeleted = true;
             
             await _container.ReplaceItemAsync(
                 targetStory, 

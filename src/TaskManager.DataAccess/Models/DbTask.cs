@@ -18,6 +18,6 @@ namespace TaskManager.DataAccess.Models
         
         public DateTime CreatedDateTime { get; set; }
         
-        public DateTime DeletedDateTime { get; set; }
+        public DateTime? DeletedDateTime { get; set; }
     }
 }

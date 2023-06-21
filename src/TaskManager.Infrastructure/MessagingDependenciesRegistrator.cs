@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Polly;
 using Polly.Retry;
-using TaskManager.Infrastructure.Models;
+using TaskManager.Contracts.Models;
 using TaskManager.Messaging;
 using TaskManager.Messaging.Messages;
 using TaskManager.ServiceBus;
@@ -24,9 +24,9 @@ namespace TaskManager.Infrastructure
                 var logger = provider.GetRequiredService<ILogger<TaskMessageSender<CreateTaskMessage>>>();
                 var serviceBusSettings = provider.GetRequiredService<IOptions<ServiceBusSettings>>().Value;
                 var serviceBusClient = new ServiceBusClient(serviceBusSettings.ConnectionString);
-                var sender = serviceBusClient.CreateSender(serviceBusSettings.CreateTaskQueueName);
                 return new TaskMessageSender<CreateTaskMessage>(
-                    sender,
+                    serviceBusClient,
+                    serviceBusSettings.CreateTaskQueueName,
                     logger,
                     new JsonMessageSerialization<CreateTaskMessage>());
             });
@@ -36,9 +36,9 @@ namespace TaskManager.Infrastructure
                 var logger = provider.GetRequiredService<ILogger<TaskMessageSender<UpdateTaskMessage>>>();
                 var serviceBusSettings = provider.GetRequiredService<IOptions<ServiceBusSettings>>().Value;
                 var serviceBusClient = new ServiceBusClient(serviceBusSettings.ConnectionString);
-                var sender = serviceBusClient.CreateSender(serviceBusSettings.UpdateTaskQueueName);
                 return new TaskMessageSender<UpdateTaskMessage>(
-                    sender,
+                    serviceBusClient,
+                    serviceBusSettings.UpdateTaskQueueName,
                     logger,
                     new JsonMessageSerialization<UpdateTaskMessage>());
             });
@@ -48,9 +48,9 @@ namespace TaskManager.Infrastructure
                 var logger = provider.GetRequiredService<ILogger<TaskMessageSender<DeleteTaskMessage>>>();
                 var serviceBusSettings = provider.GetRequiredService<IOptions<ServiceBusSettings>>().Value;
                 var serviceBusClient = new ServiceBusClient(serviceBusSettings.ConnectionString);
-                var sender = serviceBusClient.CreateSender(serviceBusSettings.DeleteTaskQueueName);
                 return new TaskMessageSender<DeleteTaskMessage>(
-                    sender,
+                    serviceBusClient,
+                    serviceBusSettings.DeleteTaskQueueName,
                     logger,
                     new JsonMessageSerialization<DeleteTaskMessage>());
             });

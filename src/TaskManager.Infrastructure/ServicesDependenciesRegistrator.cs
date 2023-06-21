@@ -11,6 +11,7 @@ namespace TaskManager.Infrastructure
         {
             services.AddAutoMapper(typeof(DtoTaskMappingProfile));
             
+            services.AddScoped<ICommandTaskService, CommandTaskService>();
             services.AddScoped<IQueryTaskService, QueryTaskService>();
         }
     }

@@ -1,4 +1,4 @@
-namespace TaskManager.Infrastructure.Models
+namespace TaskManager.Contracts.Models
 {
     public sealed class ServiceBusSettings
     {
@@ -9,5 +9,11 @@ namespace TaskManager.Infrastructure.Models
         public string DeleteTaskQueueName { get; set; }
         
         public string UpdateTaskQueueName { get; set; }
+        
+        public string ErrorCreateTaskQueueName { get; set; }
+        
+        public string ErrorDeleteTaskQueueName { get; set; }
+        
+        public string ErrorUpdateTaskQueueName { get; set; }
     }
 }
