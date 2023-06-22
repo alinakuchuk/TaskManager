@@ -8,4 +8,8 @@
       <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.35.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\TaskManager.Contracts\TaskManager.Contracts.csproj" />
+    </ItemGroup>
+
 </Project>

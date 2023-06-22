@@ -31,7 +31,7 @@ namespace TaskManager.ServiceBus
                     retryCount: 3,
                     sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
                     onRetry: (exception, retryAttempt) 
-                        => _logger.LogWarning($"Retrying due to exception: {exception.Message}. Retry attempt {retryAttempt}."));;
+                        => _logger.LogWarning($"Retrying due to exception: {exception.Message}. Retry attempt {retryAttempt}."));
         }
         
         public async Task SendMessageAsync(TMessage message)

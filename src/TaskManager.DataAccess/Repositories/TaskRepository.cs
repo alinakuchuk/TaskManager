@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Azure.Cosmos;
+using TaskManager.Contracts.Exceptions;
 using TaskManager.DataAccess.Interfaces;
 using TaskManager.DataAccess.Models;
 
@@ -47,10 +48,17 @@ namespace TaskManager.DataAccess.Repositories
         {
             var stringId = id.ToString();
             
-            return (await _container.ReadItemAsync<DbTask>(
+            var task = (await _container.ReadItemAsync<DbTask>(
                 stringId,
                 new PartitionKey(stringId),
                 cancellationToken: cancellationToken)).Resource;
+                
+            if (task.IsDeleted)
+            {
+                throw new NotFoundException();
+            }
+
+            return task;
         }
 
         public async Task CreateTaskAsync(
@@ -70,9 +78,20 @@ namespace TaskManager.DataAccess.Repositories
             DbTask task,
             CancellationToken cancellationToken)
         {
+            var stringId = id.ToString();
+            var targetStory = (await _container.ReadItemAsync<DbTask>(
+                stringId,
+                new PartitionKey(stringId),
+                cancellationToken: cancellationToken)).Resource;
+                
+            if (targetStory.IsDeleted)
+            {
+                throw new NotFoundException();
+            }
+            
             await _container.ReplaceItemAsync(
                 task,
-                id.ToString(),
+                stringId,
                 cancellationToken: cancellationToken);
         }
 
@@ -85,6 +104,11 @@ namespace TaskManager.DataAccess.Repositories
                 stringId,
                 new PartitionKey(stringId),
                 cancellationToken: cancellationToken)).Resource;
+                
+            if (targetStory.IsDeleted)
+            {
+                throw new NotFoundException();
+            }
             
             targetStory.DeletedDateTime = DateTime.UtcNow;
             targetStory.IsDeleted = true;
