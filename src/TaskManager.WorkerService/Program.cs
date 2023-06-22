@@ -1,4 +1,6 @@
+using System;
 using AutoMapper;
+using Azure.Identity;
 using Azure.Messaging.ServiceBus;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,9 +28,16 @@ namespace TaskManager.WorkerService
             Host.CreateDefaultBuilder(args)
                 .ConfigureServices((hostContext, services) =>
                 {
-                    var configuration = new ConfigurationBuilder()
+                    var configurationProvider = new ConfigurationBuilder()
                         .AddJsonFile("appsettings.json", false, false)
-                        .AddEnvironmentVariables()
+                        .AddEnvironmentVariables();
+                    
+                    var keyVaultEndpoint = new Uri(configurationProvider.Build()["KeyVaultSettings:ConnectionString"]!);
+
+                    var configuration = configurationProvider
+                        .AddAzureKeyVault(
+                            keyVaultEndpoint,
+                            new DefaultAzureCredential())
                         .Build();
                     
                     services.Configure<ServiceBusSettings>(configuration.GetSection("ServiceBusSettings"));
