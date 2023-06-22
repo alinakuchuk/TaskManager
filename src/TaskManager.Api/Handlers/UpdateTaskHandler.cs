@@ -1,6 +1,6 @@
-using System;
 using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
 using MediatR;
 using TaskManager.Api.Commands;
 using TaskManager.Messaging;
@@ -11,22 +11,17 @@ namespace TaskManager.Api.Handlers
     public sealed class UpdateTaskHandler : IRequestHandler<UpdateTaskCommand>
     {
         private readonly IMessageSender<UpdateTaskMessage> _messageSender;
+        private readonly IMapper _mapper;
 
-        public UpdateTaskHandler(IMessageSender<UpdateTaskMessage> messageSender)
+        public UpdateTaskHandler(IMessageSender<UpdateTaskMessage> messageSender, IMapper mapper)
         {
             _messageSender = messageSender;
+            _mapper = mapper;
         }
         
         public async Task Handle(UpdateTaskCommand request, CancellationToken cancellationToken)
         {
-            await _messageSender.SendMessageAsync(new UpdateTaskMessage
-            {
-                Id = request.Id,
-                Name = request.Task.Name,
-                Description = request.Task.Description,
-                DueDateTime = DateTime.Parse(request.Task.DueDateTime),
-                IsDone = request.Task.IsDone
-            });
+            await _messageSender.SendMessageAsync(_mapper.Map<UpdateTaskMessage>(request));
         }
     }
 }

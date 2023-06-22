@@ -42,7 +42,7 @@ namespace TaskManager.WorkerService
                         typeof(IMessageSerialization<>),
                         typeof(JsonMessageSerialization<>));
                     
-                    services.AddScoped<IMessageSender<CreateTaskMessage>>(provider =>
+                    services.AddSingleton<IMessageSender<CreateTaskMessage>>(provider =>
                     {
                         var logger = provider.GetRequiredService<ILogger<TaskMessageSender<CreateTaskMessage>>>();
                         var serviceBusSettings = provider.GetRequiredService<IOptions<ServiceBusSettings>>().Value;
@@ -54,7 +54,7 @@ namespace TaskManager.WorkerService
                             new JsonMessageSerialization<CreateTaskMessage>());
                     });
                     
-                    services.AddScoped<IMessageSender<UpdateTaskMessage>>(provider =>
+                    services.AddSingleton<IMessageSender<UpdateTaskMessage>>(provider =>
                     {
                         var logger = provider.GetRequiredService<ILogger<TaskMessageSender<UpdateTaskMessage>>>();
                         var serviceBusSettings = provider.GetRequiredService<IOptions<ServiceBusSettings>>().Value;
@@ -66,7 +66,7 @@ namespace TaskManager.WorkerService
                             new JsonMessageSerialization<UpdateTaskMessage>());
                     });
                     
-                    services.AddScoped<IMessageSender<DeleteTaskMessage>>(provider =>
+                    services.AddSingleton<IMessageSender<DeleteTaskMessage>>(provider =>
                     {
                         var logger = provider.GetRequiredService<ILogger<TaskMessageSender<DeleteTaskMessage>>>();
                         var serviceBusSettings = provider.GetRequiredService<IOptions<ServiceBusSettings>>().Value;
