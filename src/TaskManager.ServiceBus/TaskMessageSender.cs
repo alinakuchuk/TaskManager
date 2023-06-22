@@ -14,6 +14,7 @@ namespace TaskManager.ServiceBus
         private readonly AsyncRetryPolicy _retryPolicy;
         private readonly ILogger<TaskMessageSender<TMessage>> _logger;
         private readonly IMessageSerialization<TMessage> _messageSerialization;
+        private readonly string _queueName;
 
         public TaskMessageSender(
             ServiceBusClient serviceBusClient,
@@ -24,6 +25,7 @@ namespace TaskManager.ServiceBus
             _serviceBusSender = serviceBusClient.CreateSender(queueName);
             _logger = logger;
             _messageSerialization = messageSerialization;
+            _queueName = queueName;
             _retryPolicy = Policy
                 .Handle<ServiceBusException>()
                 .Or<TimeoutException>()
@@ -40,7 +42,11 @@ namespace TaskManager.ServiceBus
             {
                 var serviceBusMessage = new ServiceBusMessage(_messageSerialization.Serialize(message));
                 await _serviceBusSender.SendMessageAsync(serviceBusMessage);
-                _logger.LogInformation("");
+                _logger.LogInformation(
+                    "'{Message}' has been sent to '{queue}' at {time}.", 
+                    typeof(TMessage).Name,
+                    _queueName,
+                    DateTime.UtcNow);
             });
         }
     }

@@ -50,7 +50,7 @@ namespace TaskManager.WorkerService.CommandHandlers
                         await _serviceBusReceiver.CompleteMessageAsync(message, cancellationToken);
                     }
                     
-                    _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
+                    _logger.LogInformation("Worker running at: {time}", DateTime.UtcNow);
                 }
                 catch (Exception e)
                 {
