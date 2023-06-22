@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using AutoMapper;
 using Grpc.Core;
 using MediatR;
 using TaskManager.Api.Queries;
@@ -10,10 +11,12 @@ namespace TaskManager.Api.Services
     public sealed class QueryManagedTaskService : QueryTaskService.QueryTaskServiceBase
     {
         private readonly ISender _sender;
+        private readonly IMapper _mapper;
 
-        public QueryManagedTaskService(ISender sender)
+        public QueryManagedTaskService(ISender sender, IMapper mapper)
         {
             _sender = sender;
+            _mapper = mapper;
         }
         
         public override async Task<GetTasksResponse> QueryTasks(
@@ -41,11 +44,7 @@ namespace TaskManager.Api.Services
             GetTaskRequest request,
             ServerCallContext context)
         {
-            var query = new GetTaskByIdQuery
-            {
-                Id = Guid.Parse(request.Id)
-            };
-
+            var query = _mapper.Map<GetTaskByIdQuery>(request);
             var task = await _sender.Send(query);
             
             return new GetTaskResponse

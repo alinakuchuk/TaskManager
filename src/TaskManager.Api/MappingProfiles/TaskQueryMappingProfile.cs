@@ -4,9 +4,9 @@ using TaskManager.Services.Models;
 
 namespace TaskManager.Api.MappingProfiles
 {
-    public sealed class GetTasksQueryMappingProfile : Profile
+    public sealed class TaskQueryMappingProfile : Profile
     {
-        public GetTasksQueryMappingProfile()
+        public TaskQueryMappingProfile()
         {
             CreateMap<GetTasksQuery, DtoGetTasksQueryParameters>();
         }
