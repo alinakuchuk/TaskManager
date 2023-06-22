@@ -42,7 +42,7 @@ namespace TaskManager.WorkerService
                         typeof(IMessageSerialization<>),
                         typeof(JsonMessageSerialization<>));
                     
-                    services.AddSingleton<IMessageSender<CreateTaskMessage>>(provider =>
+                    services.AddScoped<IMessageSender<CreateTaskMessage>>(provider =>
                     {
                         var logger = provider.GetRequiredService<ILogger<TaskMessageSender<CreateTaskMessage>>>();
                         var serviceBusSettings = provider.GetRequiredService<IOptions<ServiceBusSettings>>().Value;
@@ -54,7 +54,7 @@ namespace TaskManager.WorkerService
                             new JsonMessageSerialization<CreateTaskMessage>());
                     });
                     
-                    services.AddSingleton<IMessageSender<UpdateTaskMessage>>(provider =>
+                    services.AddScoped<IMessageSender<UpdateTaskMessage>>(provider =>
                     {
                         var logger = provider.GetRequiredService<ILogger<TaskMessageSender<UpdateTaskMessage>>>();
                         var serviceBusSettings = provider.GetRequiredService<IOptions<ServiceBusSettings>>().Value;
@@ -66,7 +66,7 @@ namespace TaskManager.WorkerService
                             new JsonMessageSerialization<UpdateTaskMessage>());
                     });
                     
-                    services.AddSingleton<IMessageSender<DeleteTaskMessage>>(provider =>
+                    services.AddScoped<IMessageSender<DeleteTaskMessage>>(provider =>
                     {
                         var logger = provider.GetRequiredService<ILogger<TaskMessageSender<DeleteTaskMessage>>>();
                         var serviceBusSettings = provider.GetRequiredService<IOptions<ServiceBusSettings>>().Value;
@@ -86,14 +86,12 @@ namespace TaskManager.WorkerService
                         var receiver = serviceBusClient.CreateReceiver(serviceBusSettings.CreateTaskQueueName);
                         var messageSerialization = provider.GetRequiredService<IMessageSerialization<CreateTaskMessage>>();
                         var mapper = provider.GetRequiredService<IMapper>();
-                        var sender = provider.GetRequiredService<IMessageSender<CreateTaskMessage>>();
                         return new CreateTaskMessageHandler(
                             logger,
                             receiver,
                             messageSerialization,
                             mapper,
-                            provider,
-                            sender);
+                            provider);
                     });
                     
                     services.AddHostedService<UpdateTaskMessageHandler>(provider =>
@@ -104,14 +102,12 @@ namespace TaskManager.WorkerService
                         var receiver = serviceBusClient.CreateReceiver(serviceBusSettings.UpdateTaskQueueName);
                         var messageSerialization = provider.GetRequiredService<IMessageSerialization<UpdateTaskMessage>>();
                         var mapper = provider.GetRequiredService<IMapper>();
-                        var sender = provider.GetRequiredService<IMessageSender<UpdateTaskMessage>>();
                         return new UpdateTaskMessageHandler(
                             logger,
                             receiver,
                             messageSerialization,
                             mapper,
-                            provider,
-                            sender);
+                            provider);
                     });
                     
                     services.AddHostedService<DeleteTaskMessageHandler>(provider =>
@@ -121,13 +117,11 @@ namespace TaskManager.WorkerService
                         var serviceBusClient = new ServiceBusClient(serviceBusSettings.ConnectionString);
                         var receiver = serviceBusClient.CreateReceiver(serviceBusSettings.DeleteTaskQueueName);
                         var messageSerialization = provider.GetRequiredService<IMessageSerialization<DeleteTaskMessage>>();
-                        var sender = provider.GetRequiredService<IMessageSender<DeleteTaskMessage>>();
                         return new DeleteTaskMessageHandler(
                             logger,
                             receiver,
                             messageSerialization,
-                            provider,
-                            sender);
+                            provider);
                     });
                 });
     }

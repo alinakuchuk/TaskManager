@@ -20,32 +20,29 @@ namespace TaskManager.WorkerService.CommandHandlers
         private readonly IMessageSerialization<UpdateTaskMessage> _messageSerialization;
         private readonly IMapper _mapper;
         private readonly IServiceProvider _serviceProvider;
-        private readonly IMessageSender<UpdateTaskMessage> _messageSender;
 
         public UpdateTaskMessageHandler(
             ILogger<UpdateTaskMessageHandler> logger,
             ServiceBusReceiver serviceBusReceiver,
             IMessageSerialization<UpdateTaskMessage> messageSerialization,
             IMapper mapper,
-            IServiceProvider serviceProvider, IMessageSender<UpdateTaskMessage> messageSender)
+            IServiceProvider serviceProvider)
         {
             _logger = logger;
             _serviceBusReceiver = serviceBusReceiver;
             _messageSerialization = messageSerialization;
             _mapper = mapper;
             _serviceProvider = serviceProvider;
-            _messageSender = messageSender;
         }
 
         protected override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
-            ServiceBusReceivedMessage message = null;
-            UpdateTaskMessage updateTaskMessage = null;
             while (!cancellationToken.IsCancellationRequested)
             {
+                UpdateTaskMessage updateTaskMessage = null;
                 try
                 {
-                    message = await _serviceBusReceiver.ReceiveMessageAsync(cancellationToken: cancellationToken);
+                    var message = await _serviceBusReceiver.ReceiveMessageAsync(cancellationToken: cancellationToken);
                     if (message != null)
                     {
                         updateTaskMessage = _messageSerialization.Deserialize(message.Body.ToArray());
@@ -65,7 +62,9 @@ namespace TaskManager.WorkerService.CommandHandlers
                 {
                     if (updateTaskMessage != null)
                     {
-                        await _messageSender.SendMessageAsync(updateTaskMessage);
+                        using var scope = _serviceProvider.CreateScope();
+                        var sender = scope.ServiceProvider.GetRequiredService<IMessageSender<UpdateTaskMessage>>();
+                        await sender.SendMessageAsync(updateTaskMessage);
                     }
                     
                     _logger.LogError(e.Message);

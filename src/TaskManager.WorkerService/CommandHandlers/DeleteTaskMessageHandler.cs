@@ -17,32 +17,27 @@ namespace TaskManager.WorkerService.CommandHandlers
         private readonly ServiceBusReceiver _serviceBusReceiver;
         private readonly IMessageSerialization<DeleteTaskMessage> _messageSerialization;
         private readonly IServiceProvider _serviceProvider;
-        private readonly IMessageSender<DeleteTaskMessage> _messageSender;
-        private readonly IMessageSender<DeleteTaskMessage> _errorSender;
 
         public DeleteTaskMessageHandler(
             ILogger<DeleteTaskMessageHandler> logger,
             ServiceBusReceiver serviceBusReceiver,
             IMessageSerialization<DeleteTaskMessage> messageSerialization,
-            IServiceProvider serviceProvider,
-            IMessageSender<DeleteTaskMessage> messageSender)
+            IServiceProvider serviceProvider)
         {
             _logger = logger;
             _serviceBusReceiver = serviceBusReceiver;
             _messageSerialization = messageSerialization;
             _serviceProvider = serviceProvider;
-            _messageSender = messageSender;
         }
 
         protected override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
-            ServiceBusReceivedMessage message = null;
-            DeleteTaskMessage deleteTaskMessage = null;
             while (!cancellationToken.IsCancellationRequested)
             {
+                DeleteTaskMessage deleteTaskMessage = null;
                 try
                 {
-                    message = await _serviceBusReceiver.ReceiveMessageAsync(cancellationToken: cancellationToken);
+                    var message = await _serviceBusReceiver.ReceiveMessageAsync(cancellationToken: cancellationToken);
                     if (message != null)
                     {
                         deleteTaskMessage = _messageSerialization.Deserialize(message.Body.ToArray());
@@ -61,7 +56,9 @@ namespace TaskManager.WorkerService.CommandHandlers
                 {
                     if (deleteTaskMessage != null)
                     {
-                        await _messageSender.SendMessageAsync(deleteTaskMessage);
+                        using var scope = _serviceProvider.CreateScope();
+                        var sender = scope.ServiceProvider.GetRequiredService<IMessageSender<DeleteTaskMessage>>();
+                        await sender.SendMessageAsync(deleteTaskMessage);
                     }
                     
                     _logger.LogError(e.Message);
