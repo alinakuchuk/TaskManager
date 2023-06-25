@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using AutoMapper;
 using Grpc.Core;
 using MediatR;
 using TaskManager.Api.Queries;
@@ -11,27 +10,21 @@ namespace TaskManager.Api.Services
     public sealed class QueryManagedTaskService : QueryTaskService.QueryTaskServiceBase
     {
         private readonly ISender _sender;
-        private readonly IMapper _mapper;
 
-        public QueryManagedTaskService(ISender sender, IMapper mapper)
+        public QueryManagedTaskService(ISender sender)
         {
             _sender = sender;
-            _mapper = mapper;
         }
         
         public override async Task<GetTasksResponse> QueryTasks(
             GetTasksRequest request,
             ServerCallContext context)
         {
-            var query = new GetTasksQuery
-            {
-                DueDateTime = DateTime.TryParse(request.DueDateTime, out var value)
-                    ? value
-                    : null,
-                IsDone = request.IsDone,
-                Limit = request.Limit,
-                Offset = request.Offset
-            };
+            var query = new GetTasksQuery(
+                DateTime.TryParse(request.DueDateTime, out var value) ? value : null,
+                request.IsDone,
+                request.Limit,
+                request.Offset);
 
             var tasks = await _sender.Send(query);
             var response = new GetTasksResponse();
@@ -44,13 +37,9 @@ namespace TaskManager.Api.Services
             GetTaskRequest request,
             ServerCallContext context)
         {
-            var query = _mapper.Map<GetTaskByIdQuery>(request);
-            var task = await _sender.Send(query);
+            var task = await _sender.Send(new GetTaskByIdQuery(Guid.Parse(request.Id)));
             
-            return new GetTaskResponse
-            {
-                Task = task
-            };
+            return new GetTaskResponse { Task = task };
         }
     }
 }

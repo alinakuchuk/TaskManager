@@ -5,14 +5,6 @@ using TaskManager.Api.Query;
 
 namespace TaskManager.Api.Queries
 {
-    public sealed class GetTasksQuery : IRequest<IEnumerable<QueryTask>>
-    {
-        public DateTime? DueDateTime { get; set; }
-        
-        public bool? IsDone { get; set; }
-        
-        public int Limit { get; set; }
-        
-        public int Offset { get; set; }
-    }
+    public record GetTasksQuery(DateTime? DueDateTime, bool? IsDone, int Limit, int Offset)
+        : IRequest<IEnumerable<QueryTask>>;
 }

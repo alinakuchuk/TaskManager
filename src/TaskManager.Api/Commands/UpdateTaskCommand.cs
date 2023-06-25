@@ -4,10 +4,5 @@ using TaskManager.Api.Command;
 
 namespace TaskManager.Api.Commands
 {
-    public sealed class UpdateTaskCommand : IRequest
-    {
-        public Guid Id { get; set; }
-
-        public CommandTask Task { get; set; }
-    }
+    public record UpdateTaskCommand(Guid Id, CommandTask Task) : IRequest;
 }

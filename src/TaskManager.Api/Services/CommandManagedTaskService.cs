@@ -1,5 +1,5 @@
+using System;
 using System.Threading.Tasks;
-using AutoMapper;
 using Grpc.Core;
 using MediatR;
 using TaskManager.Api.Command;
@@ -10,20 +10,17 @@ namespace TaskManager.Api.Services
     public sealed class CommandManagedTaskService : CommandTaskService.CommandTaskServiceBase
     {
         private readonly ISender _sender;
-        private readonly IMapper _mapper;
 
-        public CommandManagedTaskService(ISender sender, IMapper mapper)
+        public CommandManagedTaskService(ISender sender)
         {
             _sender = sender;
-            _mapper = mapper;
         }
         
         public override async Task<CreateTaskResponse> CreateTask(
             CreateTaskRequest request,
             ServerCallContext context)
         {
-            var command = _mapper.Map<CreateTaskCommand>(request);
-            await _sender.Send(command);
+            await _sender.Send(new CreateTaskCommand(request.Task));
             
             return new CreateTaskResponse();
         }
@@ -32,8 +29,7 @@ namespace TaskManager.Api.Services
             UpdateTaskRequest request,
             ServerCallContext context)
         {
-            var command = _mapper.Map<UpdateTaskCommand>(request);
-            await _sender.Send(command);
+            await _sender.Send(new UpdateTaskCommand(Guid.Parse(request.Id), request.Task));
             
             return new UpdateTaskResponse();
         }
@@ -42,8 +38,7 @@ namespace TaskManager.Api.Services
             DeleteTaskRequest request,
             ServerCallContext context)
         {
-            var command = _mapper.Map<DeleteTaskCommand>(request);
-            await _sender.Send(command);
+            await _sender.Send(new DeleteTaskCommand(Guid.Parse(request.Id)));
             
             return new DeleteTaskResponse();
         }

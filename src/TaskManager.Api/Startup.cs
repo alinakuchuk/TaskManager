@@ -1,5 +1,7 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using Calzolari.Grpc.AspNetCore.Validation;
+using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -9,6 +11,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using TaskManager.Api.Services;
 using TaskManager.Api.Validators;
+using TaskManager.Contracts.Models;
 using TaskManager.Infrastructure;
 
 namespace TaskManager.Api
@@ -52,7 +55,7 @@ namespace TaskManager.Api
             services.AddServicesDependencies();
             
             services.AddAutoMapper(typeof(Startup));
-            services.AddMediatR(cfg 
+            services.AddMediatR(cfg
                 => cfg.RegisterServicesFromAssemblies(Assembly.GetExecutingAssembly()));
         }
 
