@@ -68,7 +68,7 @@ namespace TaskManager.Services.Tests.Services
         }
         
         [Fact]
-        public async Task GetTasksAsync_ValidTargetId_ReturnTargetTask()
+        public async Task GetTaskByIdAsync_ValidTargetId_ReturnTargetTask()
         {
             var targetId = Guid.NewGuid();
             var expectedResult = new DbTask
